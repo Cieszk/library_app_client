@@ -1,15 +1,15 @@
 import 'package:dio/dio.dart';
-import 'package:library_app_client/features/auth/data/repositories/auth_repository.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthInterceptor extends Interceptor {
-  final AuthRepository authRepository;
+  final FlutterSecureStorage secureStorage;
 
-  AuthInterceptor(this.authRepository);
+  AuthInterceptor(this.secureStorage);
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-    final token = await authRepository.getToken();
-    if (token != null) {
+    final token = await secureStorage.read(key: 'jwt_token');
+    if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }
     return handler.next(options);
